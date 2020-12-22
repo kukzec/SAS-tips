@@ -84,3 +84,37 @@ run;
 %end;
 %mend;
 
+
+/**************************************************************************/
+/* expo_round.sas -- */
+/* This macro performs a form of expoential rounding. */
+/* It rounds numbers to increasingly larger values as their value */
+/* It can be used for reporting sales when an exact number is not needed */
+/* or when giving an exact number might be more confusing. */
+/* This is a FUNCTION-type macro. */
+/* USAGE: */
+/* approx_sales = %expo_rounded(sales); */
+/**************************************************************************/
+%macro expo_round(what_var);
+ ifn(&what_var lt 1000,round(&what_var, 100),
+ ifn(&what_var lt 10000,round(&what_var, 1000),
+ ifn(&what_var lt 100000,round(&what_var, 10000),
+ ifn(&what_var lt 1000000,round(&what_var, 100000),
+ ifn(&what_var lt 10000000,round(&what_var, 1000000),
+ round(&what_var,10000000),.)))))
+%mend;
+
+
+/**************************************************************************/
+/* file_date.sas -- */
+/* This is a "function" macro to easily determine the update date of any */
+/* file. It can be used to test the age of an imported spreadsheet to */
+/* make sure it is a reasonably-recent version. */
+/* USAGE: my_file_date = %file_date("fully_qualified_path_and_name"); */
+/* The path and file may or may not be quoted. */
+/**************************************************************************/
+%macro file_date(file_path_and_name);
+ ((filename("_fd&sysjobid","%bquote(&file_path_and_name)")*0) +
+ input(finfo(fopen ("_fd&sysjobid"), "Last modified"),anydtdte18.))
+%mend;
+
