@@ -81,7 +81,6 @@ have been changed and which fields have inconsistent data type issues. */
 	data tmp5;
 		set tmp5;
 
-		4
 		dataset=cats(libname,".",memname);
 		field_name=name;
 		field_type=type;
