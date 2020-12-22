@@ -118,3 +118,45 @@ run;
  input(finfo(fopen ("_fd&sysjobid"), "Last modified"),anydtdte18.))
 %mend;
 
+/**************************************************************************/
+/* make_var.sas -- */
+/* This routine creates a unique macro variable name that can be used in */
+/* any routine without fear of colliding with other variables of the same */
+/* name. */
+/**************************************************************************/
+%macro make_var(var,len,logoption);
+%global &var;
+%let &var = _%substr(%sysfunc(compress(%sysfunc(uuidgen()),'-')),1,31);
+%if "&len" ne "" %then %do;
+ %let &var = %substr(&&&var,1,&len);
+ %end;
+%if %upcase("&logoption") ne "NOLOG" %then %do;
+ %put NOTE: New macro variable &var created as &&&var;
+ %end;
+%mend;
+
+
+/**************************************************************************/
+/* progress.sas -- */
+/**************************************************************************/
+%macro progress;
+ %make_var(progcntr);
+ %make_var(recocntr);
+ %make_var(datstrng);
+ drop
+ &progcntr
+ &recocntr
+ &datstrng
+ ;
+ length &datstrng $ 21;
+ &progcntr + 1;
+ &recocntr + 1;
+ if &progcntr = 100000 then do;
+ &datstrng = put(datetime(),datetime21.);
+ file log;
+ put &datstrng ' RecordCounter=' &recocntr comma13.;
+ &progcntr = 0;
+ end;
+%mend;
+
+
