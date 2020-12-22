@@ -1,0 +1,38 @@
+%macro printMacVars;
+	%local _opts;
+	%let _opts = %sysfunc(getoption(mprint)) %sysfunc(getoption(notes));
+	options nomprint nonotes;
+
+	proc sql noprint;
+		create table _macvars_ as
+			select *
+				from dictionary.macros
+					where offset=0 and scope='GLOBAL'
+						order by name
+		;
+	quit;
+
+	%if &SQLobs. = 0 %then
+		%do;
+			%put AllMacVars-> No global macro variables matched search criteria;
+			%goto bottom;
+		%end;
+
+	data _null_;
+		set _macvars_ end=eof;
+		file log notitles;
+
+		if _n_ = 1 then
+			put / 'Macro Variable' @34 'First 50 Characters' / 32*'=' +1 50*'=';
+		put name $33. value $char50.;
+
+		if eof then
+			put 32*'=' +1 50*'=' / "# of variables = " _n_ / 83*'=';
+	run;
+
+%bottom:
+
+	proc delete data=_macvars_;
+	run;
+		options &_opts.;
+%mend;
