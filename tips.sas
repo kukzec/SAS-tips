@@ -1,3 +1,8 @@
+
+vvaluex() function when the argument is a column and you want the value.
+vname() for arrays when you want to retrieve the name of the column.
+
+
 /* This program is a collection of small functions and macro which make 
    common patterns shorter and easier. */
 
