@@ -31,3 +31,10 @@ data want;
    by FacilityID;
    if first.FacilityID then set have(keep=Contaminant) point=_n_;
 run;
+
+
+/* The UPDATE statement is for applying transactions to a dataset.
+You need an original dataset and a transaction dataset. 
+In this case we use an empty verison of the dataset as the original data and all observations as transactions.
+Missing values in the transaction dataset mean that no change is requested for that variable.
+So the result is the last non-missing value for each variable. */
