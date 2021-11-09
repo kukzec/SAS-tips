@@ -1,4 +1,8 @@
-/* To put at the beginning of the first program of the project */
+/* macro utility functions... */
+%include "F:\mypath\macro_utils.sas";
+%setlogfile(programname);
+
+/* ... */
 
 %macro jobstart;
 	options nonotes nosource nosource2;
@@ -55,7 +59,8 @@
 		put note '|' contour @35 '|';
 		options notes source source2;
 %mend jobend;
-		
+
+/* To put at the beginning of the first program of the project */
 %macro setlogfile(projectname);
 	%let i = 1;
 	%let logfile = F:\SAS_Content\SUBA_User\Published\SAS_Scheduler\Logs\&projectname._%sysfunc(inputn(&sysdate9.,date9.),yymmddd10.)_&i..log;
@@ -71,7 +76,6 @@
 %mend;
 
 /* to put at the end of the last program of the project */
-
 %macro endlogfile();
 	%jobend;
 	proc printto;run;
