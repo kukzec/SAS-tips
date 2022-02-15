@@ -52,3 +52,54 @@ data class_anon;
  set sashelp.class;
  %hash(column=name);
 run;
+
+
+/* Second method */
+
+
+/*This program demonstrates how to create a basic anonymized 
+key for a unique identifier. Ensure you set the value in CALL
+STREAMINIT()/RANDOM_SEED macro variable to ensure you can 
+replicate the keys if needed*/
+
+%let random_seed = 30;
+
+*list of unique values;
+proc sql; 
+create table unique_list as
+select distinct name
+from sashelp.class;
+quit;
+
+*add random values;
+data random_values;
+set unique_list;
+call streaminit(&random_seed.);
+rand = rand('normal', 50, 10);
+run;
+
+*sort;
+proc sort data=random_values;
+by rand;
+run;
+
+*Assign ID to N, note this is a character format;
+data ID_key_pair;
+set random_values;
+label = put(_n_, z5.);
+
+fmtname = 'anon_fmt';
+type='C';
+start=name;
+run;
+
+*Create a format;
+proc format cntlin=id_key_pair;
+run;
+
+*Create dataset with anonymized IDs;
+data want;
+set sashelp.class;
+RandomID = put(name, $anon_fmt.);
+*drop name;
+run;
